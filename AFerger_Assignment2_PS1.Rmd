@@ -1,0 +1,132 @@
+---
+title: "DATA 605 - Assignment 2, Problem Set 1"
+author: "Amber Ferger"
+date: "2/7/2020"
+output: html_document
+---
+
+# Problem Set 1 
+
+## Problem 1 
+
+**Show that** $$A^{T}A \neq AA^{T}$$
+
+**Proof:**  
+In general, AB != BA. Given a square matrix:
+
+$$ A = \left[\begin{array}{cc} 
+a & b \\
+c & d 
+\end{array}\right]
+\,   A^T = \left[\begin{array}{cc} 
+a & c \\
+b & d 
+\end{array}\right]$$
+
+
+$$ A^{T}A = \left[\begin{array}{cc} 
+a & c \\
+b & d 
+\end{array}\right]
+\,\left[\begin{array}{cc} 
+a & b \\
+c & d 
+\end{array}\right]
+\,= \left[\begin{array}{cc} 
+a^{2} + c^{2} & ab + cd \\
+ab + dc & b^{2} + d^{2} 
+\end{array}\right]$$
+
+
+$$ AA^{T} = \left[\begin{array}{cc} 
+a & b \\
+c & d 
+\end{array}\right]
+\,\left[\begin{array}{cc} 
+a & c \\
+b & d 
+\end{array}\right]
+\,= \left[\begin{array}{cc} 
+a^{2} + b^{2} & ac + bd \\
+ac + bd & c^{2} + d^{2} 
+\end{array}\right]$$  
+
+
+In order for this to be true, 
+$$c^{2} = b^{2}, ac + bd = ab + dc$$
+
+This is clearly not always the case, so we know that $$A^{T}A \neq AA^{T}$$. 
+
+    
+**Demonstration with a 3x3 matrix:**  
+$$ A = \left[\begin{array}{cc} 
+1 & 4 & 7\\
+2 & 5 & 8\\
+3 & 6 & 9
+\end{array}\right] 
+\,   A^T = \left[\begin{array}{cc} 
+1 & 2 & 3\\
+4 & 5 & 6\\
+7 & 8 & 9
+\end{array}\right]$$ 
+
+$$ A^{T}A = \left[\begin{array}{cc} 
+1+4+9 & 4+10+18 & 7+16+27\\
+4+10+18 & 16+25+36 & 28+40+54\\
+7+16+27 & 28+40+54 & 49+64+81
+\end{array}\right] $$
+
+$$ A^{T}A = \left[\begin{array}{cc} 
+14 & 32 & 50\\
+32 & 77 & 122\\
+50 & 122 & 194
+\end{array}\right] $$
+
+
+$$ AA^{T} = \left[\begin{array}{cc} 
+1+16+49 & 2+20+56 & 3+24+63\\
+2+20+56 & 4+25+64 & 6+30+72\\
+3+24+63 & 6+30+72 & 9+36+81
+\end{array}\right] $$
+
+$$ AA^{T} = \left[\begin{array}{cc} 
+66 & 78 & 90\\
+78 & 93 & 108\\
+90 & 108 & 126
+\end{array}\right] $$
+
+$$
+\left[\begin{array}{cc} 
+14 & 32 & 50\\
+32 & 77 & 122\\
+50 & 122 & 194
+\end{array}\right] != 
+\left[\begin{array}{cc} 
+66 & 78 & 90\\
+78 & 93 & 108\\
+90 & 108 & 126
+\end{array}\right]
+$$
+
+We can see from the above example that they do not match. We can confirm this in R: 
+``` {r}
+
+A = matrix(c(1,2,3,4,5,6,7,8,9), 
+           ncol=3)
+
+At = t(A)
+
+AtA = A %*% At
+AAt = At %*% A
+
+all(AtA == AAt)
+
+```
+
+
+
+## Problem 2 
+
+**For a special type of square matrix *A*, we get $$A^{T}A = AA^{T}$$ Under what conditions could this be true? (Hint: The Identity matrix *I* is an example of such a matrix).**  
+
+In order for this to be true, $$A = A^{T}$$. 

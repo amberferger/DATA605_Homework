@@ -1,0 +1,397 @@
+---
+title: "DATA 605 - Assignment 3, Problem Set 2"
+author: "Amber Ferger"
+date: "2/10/2020"
+output: html_document
+---
+
+# Problem Set 2  
+**Compute the eigenvalues and eigenvectors of the matrix A. You'll need to show your work. You'll need to write out the characteristic polynomial and show your solution.**  
+
+$$
+A = \left[\begin{array}{cc} 
+1 & 2 & 3  \\
+0 & 4 & 5 \\
+0 & 0 & 6 
+\end{array}\right]
+$$ 
+
+**Characteristic Equation:**  
+$$P_{A}(x) = det(A-xI_{3})$$
+$$=\left|\begin{array}{cc} 
+1-x & 2 & 3  \\
+0 & 4-x & 5 \\
+0 & 0 & 6-x 
+\end{array}\right|$$
+
+$$=(1-x)\left|\begin{array}{cc} 
+4-x & 5 \\
+0 & 6-x 
+\end{array}\right| - 
+2\left|\begin{array}{cc} 
+0 & 5 \\
+0 & 6-x 
+\end{array}\right| +
+3\left|\begin{array}{cc} 
+0 & 4-x \\
+0 & 0
+\end{array}\right|$$
+
+$$= (1-x)[(4-x)(6-x)-0]-2[0]+3[0]$$
+$$= (1-x)(x^2-10x+24)$$
+$$= -x^3 +11x^2-34x +24$$
+$$= x^3 -11x^2+34x -24$$
+
+**Eigenvalues:**  
+To find the eigenvaules of this characteristic equation, we can use the last term in our characteristic equation. The factors of 24 are: 1, 2, 3, 4, 6, 8, 12, and 24. 
+
+**x = 1 is a solution: **
+$$1^3 -11(1)^2+34(1) -24 = 0$$
+$$0 = 0$$
+
+**x = 4 is a solution: **
+
+$$4^3 -11(4)^2+34(4) -24 = 0$$
+$$0 = 0$$
+**x = 6 is a solution: **  
+$$6^3 -11(6)^2+34(6) -24 = 0$$
+$$0 = 0$$
+
+
+These 3 numbers multiply to 24 and add to 11 (our second term in the characteristic equation), so this further confirms our findings.  
+
+
+**Our final eigenvalues are: **
+$$\lambda_1 = 1$$
+$$\lambda_2 = 4$$
+$$\lambda_3 = 6$$
+
+
+**Eigenvectors: ** 
+
+$\lambda_1 = 1$
+
+$$(A-\lambda_1I_n)x = 0 $$
+
+$$(\left[\begin{array}{cc} 
+1 & 2 & 3\\
+0 & 4 & 5\\
+0 & 0 & 6 \\
+\end{array}\right] -
+\left[\begin{array}{cc} 
+1 & 0 & 0\\
+0 & 1 & 0\\
+0 & 0 & 1\\
+\end{array}\right])(
+\left[\begin{array}{cc} 
+x_1 \\
+x_2 \\
+x_3
+\end{array}\right]) = 
+\left[\begin{array}{cc} 
+0 \\
+0 \\
+0
+\end{array}\right]$$
+
+$$\left[\begin{array}{cc} 
+0 & 2 & 3\\
+0 & 3 & 5\\
+0 & 0 & 5 \\
+\end{array}\right] 
+\left[\begin{array}{cc} 
+x_1 \\
+x_2 \\
+x_3
+\end{array}\right] = 
+\left[\begin{array}{cc} 
+0 \\
+0 \\
+0
+\end{array}\right]$$
+
+$$R_2 = R_2-R_3: \left[\begin{array}{cc} 0 & 2 & 3\\
+0 & 3 & 0\\
+0 & 0 & 5 \\
+\end{array}\right] 
+\left[\begin{array}{cc} 
+x_1 \\
+x_2 \\
+x_3
+\end{array}\right] = 
+\left[\begin{array}{cc} 
+0 \\
+0 \\
+0
+\end{array}\right]$$
+
+$$R_2 = \frac{1}{3}R_2: \left[\begin{array}{cc} 
+0 & 2 & 3\\
+0 & 1 & 0\\
+0 & 0 & 5 \\
+\end{array}\right] 
+\left[\begin{array}{cc} 
+x_1 \\
+x_2 \\
+x_3
+\end{array}\right] = 
+\left[\begin{array}{cc} 
+0 \\
+0 \\
+0
+\end{array}\right]$$
+
+$$R_1 = R_1-2R_2: \left[\begin{array}{cc} 
+0 & 0 & 3\\
+0 & 1 & 0\\
+0 & 0 & 5 \\
+\end{array}\right] 
+\left[\begin{array}{cc} 
+x_1 \\
+x_2 \\
+x_3
+\end{array}\right] = 
+\left[\begin{array}{cc} 
+0 \\
+0 \\
+0
+\end{array}\right]$$
+
+$$R_1 = \frac{1}{3}R_1: \left[\begin{array}{cc} 
+0 & 0 & 1\\
+0 & 1 & 0\\
+0 & 0 & 5 \\
+\end{array}\right] 
+\left[\begin{array}{cc} 
+x_1 \\
+x_2 \\
+x_3
+\end{array}\right] = 
+\left[\begin{array}{cc} 
+0 \\
+0 \\
+0
+\end{array}\right]$$
+
+$$R_3 = R_3-5R_1: \left[\begin{array}{cc} 
+0 & 0 & 1\\
+0 & 1 & 0\\
+0 & 0 & 0 \\
+\end{array}\right] 
+\left[\begin{array}{cc} 
+x_1 \\
+x_2 \\
+x_3
+\end{array}\right] = 
+\left[\begin{array}{cc} 
+0 \\
+0 \\
+0
+\end{array}\right]$$
+
+$$E_A(1) = \{\left[\begin{array}{cc} 
+1 \\
+0 \\
+0
+\end{array}\right]\}$$
+
+
+
+###########################
+$\lambda_2 = 4$
+
+$$(A-\lambda_2I_n)x = 0 $$
+
+$$(\left[\begin{array}{cc} 
+1 & 2 & 3\\
+0 & 4 & 5\\
+0 & 0 & 6 \\
+\end{array}\right] -
+\left[\begin{array}{cc} 
+4 & 0 & 0\\
+0 & 4 & 0\\
+0 & 0 & 4\\
+\end{array}\right])(
+\left[\begin{array}{cc} 
+x_1 \\
+x_2 \\
+x_3
+\end{array}\right]) = 
+\left[\begin{array}{cc} 
+0 \\
+0 \\
+0
+\end{array}\right]$$
+
+$$\left[\begin{array}{cc} 
+-3 & 2 & 3\\
+0 & 0 & 5\\
+0 & 0 & 2 \\
+\end{array}\right] 
+\left[\begin{array}{cc} 
+x_1 \\
+x_2 \\
+x_3
+\end{array}\right] = 
+\left[\begin{array}{cc} 
+0 \\
+0 \\
+0
+\end{array}\right]$$
+
+$$R_3 = \frac{1}{2}R_3: \left[\begin{array}{cc} 
+-3 & 2 & 3\\
+0 & 0 & 5\\
+0 & 0 & 1 \\
+\end{array}\right] 
+\left[\begin{array}{cc} 
+x_1 \\
+x_2 \\
+x_3
+\end{array}\right] = 
+\left[\begin{array}{cc} 
+0 \\
+0 \\
+0
+\end{array}\right]$$
+
+$$R_2 = R_2-5R_3: \left[\begin{array}{cc} 
+-3 & 2 & 3\\
+0 & 0 & 0\\
+0 & 0 & 1 \\
+\end{array}\right] 
+\left[\begin{array}{cc} 
+x_1 \\
+x_2 \\
+x_3
+\end{array}\right] = 
+\left[\begin{array}{cc} 
+0 \\
+0 \\
+0
+\end{array}\right]$$
+
+$$R_1 = -\frac{1}{3}R_1: \left[\begin{array}{cc} 
+1 & -\frac{2}{3} & -1\\
+0 & 0 & 0\\
+0 & 0 & 1 \\
+\end{array}\right] 
+\left[\begin{array}{cc} 
+x_1 \\
+x_2 \\
+x_3
+\end{array}\right] = 
+\left[\begin{array}{cc} 
+0 \\
+0 \\
+0
+\end{array}\right]$$
+
+$$R_1 = R_1+R_3: \left[\begin{array}{cc} 
+1 & -\frac{2}{3} & 0\\
+0 & 0 & 0\\
+0 & 0 & 1 \\
+\end{array}\right] 
+\left[\begin{array}{cc} 
+x_1 \\
+x_2 \\
+x_3
+\end{array}\right] = 
+\left[\begin{array}{cc} 
+0 \\
+0 \\
+0
+\end{array}\right]$$
+
+$$E_A(4) = \{\left[\begin{array}{cc} 
+2 \\
+3 \\
+0
+\end{array}\right]\}$$
+
+###########################
+$\lambda_3 = 6$
+
+$$(A-\lambda_6I_n)x = 0 $$
+
+$$(\left[\begin{array}{cc} 
+1 & 2 & 3\\
+0 & 4 & 5\\
+0 & 0 & 6 \\
+\end{array}\right] -
+\left[\begin{array}{cc} 
+6 & 0 & 0\\
+0 & 6 & 0\\
+0 & 0 & 6\\
+\end{array}\right])(
+\left[\begin{array}{cc} 
+x_1 \\
+x_2 \\
+x_3
+\end{array}\right]) = 
+\left[\begin{array}{cc} 
+0 \\
+0 \\
+0
+\end{array}\right]$$
+
+$$\left[\begin{array}{cc} 
+-5 & 2 & 3\\
+0 & -2 & 5\\
+0 & 0 & 0 \\
+\end{array}\right] 
+\left[\begin{array}{cc} 
+x_1 \\
+x_2 \\
+x_3
+\end{array}\right] = 
+\left[\begin{array}{cc} 
+0 \\
+0 \\
+0
+\end{array}\right]$$
+
+$$R_1 = R_1+R_2: \left[\begin{array}{cc} 
+-5 & 0 & 0\\
+0 & -2 & 5\\
+0 & 0 & 0 \\
+\end{array}\right] 
+\left[\begin{array}{cc} 
+x_1 \\
+x_2 \\
+x_3
+\end{array}\right] = 
+\left[\begin{array}{cc} 
+0 \\
+0 \\
+0
+\end{array}\right]$$
+
+$$R_1 = \frac{-1}{5}R_1, R_2 = \frac{-1}{2}R_2: \left[\begin{array}{cc} 
+1 & 0 & \frac{-8}{5}\\
+0 & 1 & \frac{-5}{2}\\
+0 & 0 & 0 \\
+\end{array}\right] 
+\left[\begin{array}{cc} 
+x_1 \\
+x_2 \\
+x_3
+\end{array}\right] = 
+\left[\begin{array}{cc} 
+0 \\
+0 \\
+0
+\end{array}\right]$$
+
+
+$$E_A(6) = \{\left[\begin{array}{cc} 
+\frac{8}{5} \\
+\frac{5}{2} \\
+1
+\end{array}\right]\} =
+\{\left[\begin{array}{cc} 
+16 \\
+25 \\
+10
+\end{array}\right]\}
+$$
