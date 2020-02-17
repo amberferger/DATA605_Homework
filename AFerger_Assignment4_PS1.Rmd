@@ -1,0 +1,16 @@
+---
+title: "DATA 605 - Assignment 4, Problem Set 1"
+author: "Amber Ferger"
+date: "2/17/2020"
+output: html_document
+---
+
+# Problem Set 1
+**In this problem, we'll verify using R that SVD and Eigenvalues are related as worked out in the weekly module. Given a 3 x 2 matrix A:**  
+
+$$A = \left[\begin{array}{cc} 
+1 & 2 & 3  \\
+-1 & 0 & 4 
+\end{array}\right]$$  
+
+**write code in R to compute ** $X = AA^T$ **and** $Y = A^TA$. **Then, compute the eigenvalues and eigenvectors of X and Y using the built-in commands in R. Then compute the left-singular, singular values, and right-singular vectors of A using the *svd* command. Examine the two sets of singular vectors and show that they are indeed eigenvectors of X and Y. In addition, the two non-zero eigenvalues (the 3rd value will be very close to zero, if not zero) of both X and Y are the same and are squares of the non-zero singular values of A. **
