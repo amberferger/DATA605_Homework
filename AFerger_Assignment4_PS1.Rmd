@@ -14,3 +14,75 @@ $$A = \left[\begin{array}{cc}
 \end{array}\right]$$  
 
 **write code in R to compute ** $X = AA^T$ **and** $Y = A^TA$. **Then, compute the eigenvalues and eigenvectors of X and Y using the built-in commands in R. Then compute the left-singular, singular values, and right-singular vectors of A using the *svd* command. Examine the two sets of singular vectors and show that they are indeed eigenvectors of X and Y. In addition, the two non-zero eigenvalues (the 3rd value will be very close to zero, if not zero) of both X and Y are the same and are squares of the non-zero singular values of A. **
+
+
+## Solution  
+Define $A$, $A^{T}$, $X$, and $Y$:
+```{r}
+A <- matrix(c(1,-1,2,0,3,4),nrow=2)
+At <- t(A)
+
+X <- A%*%At
+Y <- At%*%A
+
+```
+
+Define the eigenvectors and eigenvalues of $X$ and $Y$:
+
+```{r}
+# eigenvalues and eigenvectors of X
+evX <- eigen(X)
+eValX <- evX$values
+eVecX <- evX$vectors
+
+# eigenvalues and eigenvectors of Y
+evY <- eigen(Y)
+eValY <- evY$values
+eVecY <- evY$vectors
+```
+
+Compute the left-singular, singular values, and right-singular vectors of $A$:
+
+``` {r}
+svdA <- svd(A)
+leftVals <- svdA$u
+singVals <- svdA$d
+rightVals <- svdA$v
+
+```
+
+
+Examine the two sets of singular vectors and show that they are indeed eigenvectors of $X$ and $Y$.  
+
+Left singular values of $A$ are eigenvectors of $X$:
+
+``` {r}
+leftVals
+eVecX
+```
+
+Right singular values of $A$ are eigenvectors of $Y$:
+```{r}
+rightVals
+eVecY
+
+```
+
+
+The two non-zero eigenvalues (the 3rd value will be very close to zero, if not zero) of both $X$ and $Y$ are the same and are squares of the non-zero singular values of $A$.
+
+``` {r}
+singVals
+eValX
+
+singVals^2 - eValX
+
+```
+
+```{r}
+singVals
+eValY
+
+singVals^2 - eValY[1:2]
+
+```
