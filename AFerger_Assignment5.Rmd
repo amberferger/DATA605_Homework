@@ -7,32 +7,88 @@ output: html_document
 
 **Choose independently two numbers, $B$ and $C$, at random from the interval $[0,1]$ with uniform density. Prove that $B$ and $C$ are proper probability distributions. Note that the point $(B,C)$ is then chosen at random in the unit square.**  
 
+First, we will define our interval values and simulate the draw of $B$ and $C$ from a uniform distriubution 10,000 times. 
 ``` {r}
-B <- runif(1)
-C <- runif(1)
+set.seed(123)
 
-B
-C
+# Set number of runs to 10,000
+n <- 10000
+minVal <- 0
+maxVal <- 1
+
+
+setB <- runif(n, min = minVal, max = maxVal)
+setC <- runif(n, min = minVal, max = maxVal)
 
 ```
+
+To prove that $B$ and $C$ are proper probability distributions, let's first make sure that all values are within the interval range [0,1].
+
+
+``` {r}
+# check to see if any values are below 0
+paste0('Percent of times B is in correct range: ',100*length(setB[which(setB >0 & setB < 1)])/n)
+paste0('Percent of times C is in correct range: ',100*length(setC[which(setC >0 & setC < 1)])/n)
+
+```
+
+Next, we will visually examine the distributions of $B$ and $C$ against a proper uniform distribution: 
+```{r}
+hist(setB, 
+     freq = FALSE, 
+     xlab = 'B',  
+     density = 20,
+     main = "Distribution of B")
+curve(dunif(x, min = minVal, max = maxVal), 
+      from =-0.50, to = 1.5, 
+      n = n, 
+      col = "darkblue", 
+      lwd = 2, 
+      add = TRUE, 
+      yaxt = "n",
+      ylab = 'probability')
+
+```
+
+``` {r}
+hist(setC, 
+     freq = FALSE, 
+     xlab = 'B',  
+     density = 20,
+     main = "Distribution of C")
+curve(dunif(x, min = minVal, max = maxVal), 
+      from =-0.50, to = 1.5, 
+      n = n, 
+      col = "darkblue", 
+      lwd = 2, 
+      add = TRUE, 
+      yaxt = "n",
+      ylab = 'probability')
+
+```
+
+Both are nearly uniform distributions, so we can say that $B$ and $C$ follow proper probability distributions. 
 
 **Find the probability that: **  
 
 (a) $B + C < \frac{1}{2}$
 ``` {r}
 
+sum((setB + setC)< 0.5)/n
 
 ```
 
 (b) $BC < \frac{1}{2}$  
 ``` {r}
 
+sum((setB * setC)< 0.5)/n
 
 ```
 
 
 (c) $|B-C| < \frac{1}{2}$  
 ``` {r}
+sum(abs((setB - setC))< 0.5)/n
 
 
 ```
@@ -41,6 +97,13 @@ C
 (d) $max\{B,C\} < \frac{1}{2}$  
 ``` {r}
 
+finalCount <- 0
+
+for(i in seq(n)){
+  finalCount <- finalCount +(max(setB[i],setC[i]) < 0.5)
+}
+
+finalCount/n
 
 ```
 
@@ -49,5 +112,12 @@ C
 ``` {r}
 
 
-```
+finalCount <- 0
 
+for(i in seq(n)){
+  finalCount <- finalCount +(min(setB[i],setC[i]) < 0.5)
+}
+
+finalCount/n
+
+```
