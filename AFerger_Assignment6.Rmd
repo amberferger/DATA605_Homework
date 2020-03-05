@@ -1,0 +1,197 @@
+---
+title: "DATA 605 - Assignment 6"
+author: "Amber Ferger"
+date: "3/2/2020"
+output: html_document
+---
+
+### Problem 1  
+**A box contains  54 red marbles, 9 white marbles, and 75 blue marbles. If a marble is randomly selected from the box, what is the probability that it is red or blue? Express your answer as a fraction or a decimal number rounded to four decimal places.**  
+```{r}
+
+numR <- 54
+numW <- 9
+numB <- 75
+
+allMarbles <- numR+numW+numB
+probRorB <- (numR+numB)/allMarbles
+round(probRorB, digits = 4)
+
+```
+
+### Problem 2  
+**You are going to play mini golf. A ball machine that contains 19 green golf balls, 20 red golf balls, 24 blue golf balls, and 17 yellow golf balls, randomly gives you your ball. What is the probability that you end up with a red golf ball? Express your answer as a simplified fraction or a decimal rounded to four decimal places.**
+
+
+```{r}
+
+numG <- 19
+numR <- 20
+numB <- 24
+numY <- 17
+
+allBalls <- numG+numR+numB+numY
+probR <- numR/allBalls
+round(probR, digits = 4)
+
+```
+
+### Problem 3  
+**A pizza delivery company classifies its customers by gender and location of residence. The research department has gathered data from a random sample of 1399 customers. The data is summarized in the table below.**  
+
+<center> ![](Assign6.png) </center>
+
+**What is the probability that a customer is not male or does not live with parents? Write your answer as a fraction or a decimal number rounded to four decimal places.**  
+
+```{r}
+mApt <- 81
+mDorm <- 116
+mPar <- 215
+mFrat <- 130
+mOther <- 129
+allMale <- mApt + mDorm + mPar + mFrat + mOther
+
+fApt <- 228
+fDorm <- 79
+fPar <- 252
+fFrat <- 97
+fOther <- 72
+allFemale <- fApt + fDorm + fPar + fFrat + fOther
+
+probForP <- (allFemale + allMale - mPar)/ (allMale + allFemale)
+
+round(probForP, digits = 4)
+
+```
+
+### Problem 4  
+**Determine if the following events are independent: Going to the gym. Losing weight.**  
+These events are ***dependent*** because in general, going to the gym causes an individual to lose weight. 
+
+
+### Problem 5  
+**A veggie wrap at City Subs is composed of 3 different vegetables and 3 different condiments wrapped up in a tortilla. If there are 8 vegetables, 7 condiments, and 3 types of tortilla available, how many different veggie wraps can be made?**  
+
+The key to this problem is that our veggie and condiments ***cannot*** be repeated in the same sub. This means:  
+
+1. Our first veggie slot will have 8 options, our second veggie slot will have 7 options (because we already chose one), and our third veggie slot will have 6 options.  
+2. Similarly, our first condiment slot will have 7 options, our second will have 6, and our third will have 5.   
+3. Since we only can only have 1 tortilla, we have 3 total options.  
+
+Additionally, we know that the order of the veggies/condiments does not matter, so we need to take this into account by removing this from the total number of combinations that we will calculate. 
+
+Our final number of combinations is:  
+
+```{r}
+
+numV <- 8
+numC <- 7
+numT <- 3
+numSlotsV <- 3
+numSlotsC <- 3
+
+veggieCombos <- numV * (numV-1) * (numV - 2)
+condCombos <- numC * (numC-1) * (numC-2)
+
+totalCombos <- veggieCombos * condCombos * numT
+
+# remove double-counting as a result of order for veggies and condiments
+finalCombos <- totalCombos / (factorial(numSlotsV) * factorial(numSlotsC))
+
+finalCombos
+
+```
+
+### Problem 6  
+**Determine if the following events are independent. Jeff runs out of gas on the way to work. Liz watches the evening news.**  
+These events are ***independent*** because Jeff running out of gas does not affect Liz watching the evening news. 
+
+
+### Problem 7  
+**The newly elected president needs to decide the remaining 8 spots available in the cabinet he/she is appointing. If there are 14 eligible candidates for these positions (where rank matters), how many different ways can the members of the cabinet be appointed?**  
+
+Since rank matters, we know that our combination calculation should take order into account. We have 8 spots with 14 candidates, so the first slot will have 14 choices, and every slot thereafter will have 1 less choice. 
+```{r}
+nSpots <- 8
+nCand <- 14
+
+candCombos <- nCand
+
+for (i in 1: (nSpots - 1)){
+  candCombos <- candCombos * (nCand-i)
+}
+
+candCombos
+
+## This problem can also be completed in the following way: 
+factorial(nCand)/ factorial(nCand - nSpots)
+
+```
+
+
+### Problem 8  
+**A bag contains 9 red, 4 orange, and 9 green jellybeans. What is the probability of reaching into the bag and randomly withdrawing 4 jellybeans such that the number of red ones is 0, the number of orange ones is 1, and the number of green ones is 3? Write your answer as a fraction or a decimal number rounded to four decimal places.**  
+
+To find this probability, we need to calculate the following:  
+$$P(0\: red,\: 1 \: orange, \: 3 \: green) = \frac{num\: ways\: event\: can\: happen}{total\: number\: of\: jellybean\: choices}$$ 
+
+The number of ways the event can happen can be broken down into 3 parts: 
+
+1. The number of ways 0 reds can be chosen: 
+$${{9}\choose{0}} $$
+2. The number of ways 1 orange can be chosen:
+$${{4}\choose{1}} $$
+3. The number of ways 3 greens can be chosen. 
+$${{9}\choose{3}} $$
+
+```{r}
+
+nRed <- 9
+nOrange <- 4
+nGreen <- 9
+totalBeans <- nRed + nOrange + nGreen
+nChoices <- 4
+
+totalChoices <- choose(22,4)
+numWaysEvent <- choose(nRed,0)*choose(nOrange,1) * choose(nGreen,3)
+
+round(numWaysEvent / totalChoices, digits = 4)
+
+```
+
+### Problem 9  
+**Evaluate the following expression:**
+$$\frac{11!}{7!}$$
+```{r}
+factorial(11)/factorial(7)
+
+```
+
+### Problem 10  
+**Describe the complement of the given event:** 
+***67% of subscribers to a fitness magazine are over the age of 34.***  
+33% of subscribers to a fitness magazine are 34 years of age or younger. 
+
+
+### Problem 11  
+**If you throw exactly three heads in four tosses of a coin you win \$97. If not, you pay me $30.** 
+
+**1. Find the expected value of the proposition. Round your answer to two decimal places.**  
+**2. If you played this game 559 times how much would you expect to win or lose? (Losses must be entered as negative.)**
+
+
+### Problem 12  
+**Flip a coin 9 times. If you get 4 tails or less, I will pay you \$23. Otherwise you pay me \$26.**  
+
+**1. Find the expected value of the proposition. Round your answer to two decimal places.**   
+**2. If you played this game 994 times how much would you expect to win or lose? (Losses must be entered as negative.)** 
+
+### Problem 13  
+**The sensitivity and specificity of the polygraph has been a subject of study and debate for years. A 2001 study of the use of polygraph for screening purposes suggested that the probability of detecting a liar was .59 (sensitivity) and that the probability of detecting a "truth teller" was .90 (specificity). We estimate that about 20% of individuals selected for the screening polygraph will lie.**  
+
+**a. What is the probability that an individual is actually a liar given that the polygraph detected him/her as such? (Show me the table or the formulaic solution or both.)**  
+
+
+**b. What is the probability that an individual is actually a truth-teller given that the polygraph detected him/her as such? (Show me the table or the formulaic solution or both.)**  
+
+**c. What is the probability that a randomly selected individual is either a liar or was identified as a liar by the polygraph? Be sure to write the probability statement.**  
