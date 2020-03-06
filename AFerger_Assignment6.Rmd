@@ -177,14 +177,55 @@ factorial(11)/factorial(7)
 **If you throw exactly three heads in four tosses of a coin you win \$97. If not, you pay me $30.** 
 
 **1. Find the expected value of the proposition. Round your answer to two decimal places.**  
-**2. If you played this game 559 times how much would you expect to win or lose? (Losses must be entered as negative.)**
+We will need to find the probability of 3 heads 
+```{r}
+
+winAmt <- 97
+loseAmt <- 30
+pHeads <- 0.5
+
+winProb <- pbinom(3,4, pHeads) - pbinom(2,4, 1- pHeads)
+expWinnings <- (winProb * winAmt) - ((1-winProb)*loseAmt)
+
+paste0('The expected winnings are: ',round(expWinnings,4))
+
+```
+
+**2. If you played this game 559 times how much would you expect to win or lose? (Losses must be entered as negative.)**  
+```{r}
+
+paste0('After 559 games, we would expect to win: ', 559*round(expWinnings,4))
+
+```
+
 
 
 ### Problem 12  
 **Flip a coin 9 times. If you get 4 tails or less, I will pay you \$23. Otherwise you pay me \$26.**  
 
 **1. Find the expected value of the proposition. Round your answer to two decimal places.**   
+The expected value is the total number of tails we can expect to get in 9 tosses. We can further identify the probability of getting 4 or less tails by using the cumulative probability function. Finally, we will calculate the expected winnings:
+```{r}
+maxTails <- 4
+pTails <- 0.5
+numTosses <- 9
+winAmt <- 23
+loseAmt <- 26
+
+expVal <- pTails *numTosses
+probWin <- pbinom(maxTails, size=numTosses, prob = pTails)
+expWinnings <- (probWin * winAmt) - ((1-probWin) * loseAmt)
+
+paste0('The expected winnings are: ',round(expWinnings,4))
+
+
+```
+
 **2. If you played this game 994 times how much would you expect to win or lose? (Losses must be entered as negative.)** 
+```{r}
+
+paste0('After 994 games, we would expect to win: ', 994 * round(expWinnings,4))
+```
 
 ### Problem 13  
 **The sensitivity and specificity of the polygraph has been a subject of study and debate for years. A 2001 study of the use of polygraph for screening purposes suggested that the probability of detecting a liar was .59 (sensitivity) and that the probability of detecting a "truth teller" was .90 (specificity). We estimate that about 20% of individuals selected for the screening polygraph will lie.**  
