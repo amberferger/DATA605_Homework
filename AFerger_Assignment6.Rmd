@@ -231,8 +231,58 @@ paste0('After 994 games, we would expect to win: ', 994 * round(expWinnings,4))
 **The sensitivity and specificity of the polygraph has been a subject of study and debate for years. A 2001 study of the use of polygraph for screening purposes suggested that the probability of detecting a liar was .59 (sensitivity) and that the probability of detecting a "truth teller" was .90 (specificity). We estimate that about 20% of individuals selected for the screening polygraph will lie.**  
 
 **a. What is the probability that an individual is actually a liar given that the polygraph detected him/her as such? (Show me the table or the formulaic solution or both.)**  
+Let's assume 100 individals take the lie detector test. We estimate that 20% of the individuals will lie (20 people), so we know that 80 will tell the truth. Of the 20 estimated people that lie, we know that 59% of them will be detected. Similarly, of those that are truth telling, we know that 90% will be detected. This will form the basis of our table. 
 
+```{r}
+nParticipants <- 100
+pctLie <- 0.2
+liars <- nParticipants * pctLie
+truth <- nParticipants - liars
+
+
+pctTrueLie <- 0.59
+pctTrueTruth <- 0.9 
+
+tp <- liars * pctTrueLie
+fp <- liars - tp
+tn <- truth * pctTrueTruth
+fn<- truth - tn
+
+finalTable <- data.frame(c(tp,fp, liars), c(tn, fn, truth), c(tp + tn,fp + fn, nParticipants))
+names(finalTable) = c('Positive (Liars)', 'Negative (Truth)', 'All')
+row.names(finalTable) = c('True', 'False', 'Total')
+
+finalTable
+
+```
+
+The final probability of a true liar is the total number of correctly classified liars over the total number of actual liars:  
+
+```{r}
+
+pctTrueLiar <- tp / (tp+fn)
+pctTrueLiar
+
+```
 
 **b. What is the probability that an individual is actually a truth-teller given that the polygraph detected him/her as such? (Show me the table or the formulaic solution or both.)**  
+The final probability of a true truth-teller is the total number of correctly classified truth-tellers over the total number of true truth-tellers:  
+```{r}
+
+pctTrueTruth <- tn / (tn+fp)
+pctTrueTruth
+
+```
 
 **c. What is the probability that a randomly selected individual is either a liar or was identified as a liar by the polygraph? Be sure to write the probability statement.**  
+
+We know that: 
+$$P(A∪B)=P(A)+P(B)−P(A∩B)$$ 
+In other words: 
+$$P(liar∪identified\:liar)=P(liar)+P(identified\: liar)−P(liar∩identified\:liar)$$
+Therefore, we know that: 
+```{r}
+
+(liars + (tp+fp) - tp) / nParticipants
+
+```
