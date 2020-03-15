@@ -1,24 +1,191 @@
 ---
 title: "DATA 605 - Assignment 7"
 author: "Amber Ferger"
-date: "3/10/2020"
+date: "3/14/2020"
 output: html_document
 ---
 
 ## Problem 1  
 **Let $X_1$, $X_2$...$X_n$ be $n$ mutually independent random variables, each of which is uniformly distributed on the integers from 1 to $k$. Let $Y$ denote the minimum of the $X_i$s. Find the distribution of $Y$.**  
 
+Let $j$ be a value within the range $[1,k]$.
+
+We will define the probability of $Y=j$ as: 
+$$P(Y=j) = \frac{num\; ways \: event \; can \; happen}{total \; number \; of \; options}$$
+
+We know that the total number of options is $k^n$ because each of the $n$ variables can take on $k$ different values. Therefore, $k^n$ will form the denominator in our above equation.  
+
+Intuitively, we know that as $j$ increases, the probability of the minimum of the $X_is$ being equal to $j$ decreases. This is because the number of ways that $j$ can be the minimum of the set of variables (our numerator in the probability equation above) decreases. In order to abstract this, let's use an example.  
+
+Suppose $k=4$ and $n=2$. In order for $Y=j$ to be true, we know that the set of values each variable can take on is as follows:  
+
+$Y=j=1: \{1,2,3,4\}$  
+$Y=j=2: \{2,3,4\}$  
+$Y=j=3: \{3,4\}$  
+$Y=j=4: \{4\}$  
+
+This means that in order for the minimum value to be 3, the variables cannot take on a value of 1 or 2. Similarly, in order for the minimum value to be 4, the variables can only take on a value of 4. 
+
+The number of ways the event can occur for each value of $j$ can be modeled as:  
+$$number \; of \; values \; in \; the \;set^{number \; of \; variables}$$  
+Following our example:  
+
+$Y=j=1: 4^2$  
+$Y=j=2: 3^2$  
+$Y=j=3: 2^2$  
+$Y=j=4: 1^2$  
+
+We can abstract the number of times Y=j can occur as:  
+$$Y=j: (k-j+1)^n$$
+Putting this all together:  
+
+$$P(Y=j) = \frac{(k-j+1)^n}{k^n}$$
+
 ## Problem 2 
 **Your organization owns a copier (future lawyers, etc.) or MRI (future doctors). This machine has a manufacturer's expected lifetime of 10 years. This means that we expect one failure every ten years. (Include the probability statements and R code for each part).**  
+We know that a "success" is the probability that the event will happen. In this instance, success is defined as the probability that a machine will fail. A failure is defined as the probability that the machine will last. For all of the following, let:  
+$$P(Success)=p = \frac{1}{10}$$
+$$P(Failure)=1-p = \frac{9}{10}$$ 
+$$X=number\; of\; trials$$ 
 
 **a. What is the probability that the machine will fail after 8 years? Provide also the expected value and standard deviation. Model as a geometric. (Hint: the probability is equivalent to not failing during the first 8 years.)**  
+Modeling as a geometric distribution, we know that: 
+$$P(X>k)=(1-p)^k$$
+
+where $k$ is the total number of years.  
+
+Therefore, the probability of 0 successes (machine failures) in the first 8 years is: 
+```{r}
+p <- 1/10
+k <- 8
+
+geomDist <- (1-p)^k
+geomDist
+
+```
+
+The expected value is: 
+$$E=\frac{1}{p}=10$$
+
+The standard deviation is: 
+$$\sigma = \sqrt{\frac{1-p}{p^2}}$$
+
+```{r}
+
+geomStDev <- sqrt((1-p)/(p)^2)
+geomStDev
+
+```
 
 **b. What is the probability that the machine will fail after 8 years? Provide also the expected value and standard deviation. Model as an exponential.**  
 
-**c. What is the probability that the machine will fail after 8 years?. Provide also the
-expected value and standard deviation. Model as a binomial. (Hint: 0 success in 8
-years)**  
+Modeling as an exponential distribution, we know that:   
+$$P(X\leq k) = 1-e^{-k\lambda}$$
+
+where $k$ is the total number of years and $\lambda$ is the average number of failures per year.  
+
+The complement of this is: 
+$$P(X> k)=e^{-k\lambda}$$
+
+Therefore, the probability of 0 successes (machine failures) in the first 8 years is: 
+```{r}
+
+k <- 8
+expLambda <- 1/10
+expDist <- exp(-k*expLambda)
+expDist
+
+```
+
+The expected value is: 
+$$E = \frac{1}{\lambda}$$
+```{r}
+
+expExpVal <- 1/expLambda
+expExpVal
+
+```
+
+The standard deviation is:  
+$$\sigma = \sqrt{\frac{1}{\lambda^2}}$$
+```{r}
+
+stDevExp <- sqrt(1/(expLambda^2))
+stDevExp
+
+```
+
+**c. What is the probability that the machine will fail after 8 years? Provide also the expected value and standard deviation. Model as a binomial. (Hint: 0 success in 8 years)**  
+The binomial distribution is: 
+$$b(n,p,k) = {{n}\choose{k}}p^k(1-p)^{n-k}$$
+
+where $n$ is the number of years  and $k$ is the number of successes. 
+
+Therefore, the probability of 0 successes (machine failures) in the first 8 years is: 
+```{r}
+
+n <- 8
+k <- 0
+p <- 1/10
+choose(n,k)*p^k*(1-p)^(n-k)
 
 
-**d. What is the probability that the machine will fail after 8 years?. Provide also the
-expected value and standard deviation. Model as a Poisson.** 
+```
+
+The expected value is:  
+
+```{r}
+
+expBinom <- n * p
+expBinom
+
+```
+
+The standard deviation is: 
+```{r}
+stDevBinom <- sqrt(n*p*(1-p))
+stDevBinom
+
+```
+
+**d. What is the probability that the machine will fail after 8 years? Provide also the expected value and standard deviation. Model as a Poisson.** 
+
+We know that the mean failure over the 8 year period is: 
+$$\lambda = n * p$$
+```{r}
+
+poissonLambda <- n * p
+poissonLambda
+
+```
+
+We can model this as a Poisson distribution: 
+
+$$P(X=n)= \frac{\lambda^ne^{-\lambda}}{n!}$$
+
+where $n$ is the number of failures in the first 8 years.
+
+Therefore, the probability of 0 successes (machine failures) in the first 8 years is: 
+```{r}
+
+n <- 0
+poissonDist <- ((poissonLambda^n)*exp(-poissonLambda))/factorial(n)
+
+poissonDist
+
+```
+
+The expected value is:  
+$$E(X) = \lambda = 0.8$$  
+
+In a poisson distribution, we know that: 
+$$E(X) = Var(X) = \lambda$$  
+
+Since $Var(X) = \sqrt{\sigma}$, we know that the standard deviation is:   
+
+```{r}
+stDevPoisson <- sqrt(poissonLambda)
+stDevPoisson
+
+
+```
