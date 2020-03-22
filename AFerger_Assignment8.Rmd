@@ -7,26 +7,103 @@ output: html_document
 
 ## Problem 11 (pg.303)
 
-**A company buys 100 lightbulbs, each of which has an exponential lifetime of 1000 hours. What is the expected time for the first of these bulbs to burn out? (See Exercise 10.)**
+**A company buys 100 lightbulbs, each of which has an exponential lifetime of 1000 hours. What is the expected time for the first of these bulbs to burn out? (See Exercise 10.)**  
+
+Problem 10 states that the density of the minimum value is exponential with mean $\frac{\mu}{n}$.  
+In this case, we know that $\mu = 1000$ and $n=100$, so we expect that the first of the bulbs will burn out at:  
+$$E[min(X_i)]= \frac{\mu}{n}=\frac{1000}{100}=10 \; hours$$
+
 
 ## Problem 14 (pg.303)
 
-**Assume that $X_1$ and $X_2$ are independent random variables, each having an exponential density with parameter \lambda. Show that $Z = X_1 − X_2$ has density**  
+**Assume that $X_1$ and $X_2$ are independent random variables, each having an exponential density with parameter $\lambda$. Show that $Z = X_1 − X_2$ has density**  
 $$f_Z(z) = \frac{1}{2}\lambda e^{-\lambda |z|}$$
+
+We know that since $X_1$ and $X_2$ are exponentially distributed,  
+
+
+$$
+f_{X_1}(x) = f_{X_2}(x) =\left\{
+        \begin{array}{ll}
+            \lambda e^{-\lambda x}, & \quad x \geq 0 \\
+            0, & \quad x < 0
+        \end{array}
+    \right.
+$$
+
+Since $Z = X_1 − X_2$, we can re-write as $X_1 = Z + X_2$ and therefore, $f_{X_1} = f_{X_1}(z+x_2)$.
+
+We know that:  
+$$f_Z(z) = \int_{-\infty}^{\infty}f_{X_1}(z+x_2)f_{X_2}(x_2)dx_2$$
+
+In an exponential distribution, $\lambda e^{-\lambda x}$ only applies when $x$ (or in this case, $z$) $\geq 0$. Therefore, we will set our bounds to be $[0,\infty]$.
+
+$$= \int_{0}^{\infty}\lambda e^{-\lambda (z+x_2)}\lambda e^{-\lambda x_2}dx_2$$ 
+$$= \int_{0}^{\infty}\lambda e^{-\lambda z-\lambda x_2}\lambda e^{-\lambda x_2}dx_2$$ 
+$$= \int_{0}^{\infty}\lambda e^{-\lambda z}\lambda e^{-2\lambda x_2}dx_2$$ 
+$$= \lambda^2 e^{-\lambda z}\int_{0}^{\infty}e^{-2\lambda x_2}dx_2$$ 
+
+$$= \lambda^2 e^{-\lambda z} \cdot [-\frac{1}{2 \lambda } e^{-2\lambda \cdot \infty} +\frac{1}{2 \lambda }  e^{-2\lambda \cdot 0}]$$ 
+$$= \lambda^2 e^{-\lambda z} \cdot \frac{1}{2 \lambda } $$ 
+$$= \frac{1}{2}\lambda e^{-\lambda z} $$ 
+
+Because $z \geq 0$, our final solution is: 
+
+$$= \frac{1}{2}\lambda e^{-\lambda |z|} $$ 
 
 ## Problem 1 (pg.320)
 
 **Let $X$ be a continuous random variable with mean $μ = 10$ and variance $\sigma^{2} = \frac{100}{3}$. Using Chebyshev’s Inequality, find an upper bound for the following probabilities.** 
 
-**a. $P(|X-10|\geq 2)$**  
+
 We know that Chebyshev's Inequality is:  
-$$P(|X - \mu| \geq \epsilon) \leq \frac{\sigma^{2}}{\epsilon^{2}}$$
+$$P(|X - \mu| \geq \epsilon) \leq \frac{\sigma^{2}}{\epsilon^{2}}$$  
+
+For the following problems, we will define the variable $var$ : 
+
 ``` {r}
 
+var <- 100/3
 
 ```
 
+**a. $P(|X-10|\geq 2)$**  
+
+``` {r}
+
+eps <- 2
+a <- var / (eps^2)
+a
+
+```
+**Since the upper bound cannot exceed 1, this calculation is uninformative -- we interpret this as "no more than 100% of values can be more than 2 from the mean."**
+
 
 **b. $P(|X-10|\geq 5)$**  
+``` {r}
+
+eps <- 5
+b <- var / (eps^2)
+b
+
+```
+**Similar to question a, this upper bound is uninformative, because the value cannot exceed 1.** 
+
+
 **c. $P(|X-10|\geq 9)$**   
+``` {r}
+
+eps <- 9
+c <- var / (eps^2)
+c
+
+```
+
 **d. $P(|X-10|\geq 20)$** 
+``` {r}
+
+eps <- 20
+d <- var / (eps^2)
+d
+
+```
