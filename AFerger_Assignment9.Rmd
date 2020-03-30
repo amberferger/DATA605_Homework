@@ -1,0 +1,154 @@
+---
+title: "DATA 605 - Assignment 9"
+author: "Amber Ferger"
+date: "3/27/2020"
+output: html_document
+---
+
+## Problem 11 (pg.363)
+**The price of one share of stock in the Pilsdoff Beer Company (see Exercise 8.2.12) is given by $Y_n$ on the $n$th day of the year. Finn observes that the differences $X_n = Y_{n+1} −Y_n$ appear to be independent random variables with a common distribution having mean $\mu = 0$ and variance $\sigma^2 = \frac{1}{4}$. If $Y_1 = 100$, estimate the probability that $Y_{365}$ is:**  
+
+a. $\geq 100$  
+b. $\geq 110$ 
+c. $\geq 120$
+
+By definition, we know that $S_n = X_1 + X_2 + X_3 + ... + X_n$. We are told that $X_n = Y_{n+1} - Y_n$, so subbing this in, we get: 
+$$S_n = (Y_2 - Y_1) + (Y_3 - Y_2) + (Y_4 - Y_3)+ ... + (Y_{n+1} - Y_n)$$ 
+
+Simplifying by canceling out terms, we are left with: 
+$$S_n = Y_{n+1} - Y_1$$
+Since we are asked to find $Y_{365}$, we will use $n=364$ to calculate $S_{364}=Y_{365}-Y_1$.   
+
+Finally, we can substitute this into our equation: 
+$$S_n^* = \frac{S_n - n\mu}{\sqrt{n} \sigma}$$
+
+We'll define our common variables, $n$, $\mu$, $\sigma^2$, $\sigma$, and $Y_1$: 
+
+```{r}
+n <- 364 
+mu <- 0
+var <- 1/4
+stdev <- sqrt(var)
+y1 <- 100
+```
+
+### $Y_{365} \geq 100$ 
+```{r}
+
+y365 <- 100
+
+s364 <- y365-y1
+
+sn1 <- (s364 - (n*mu)) / (sqrt(n) * stdev)
+pnorm(sn1, lower.tail=FALSE)
+
+
+```
+
+### $Y_{365} \geq 110$ 
+```{r}
+
+y365 <- 110
+
+s364 <- y365-y1
+
+sn2 <- (s364 - (n*mu)) / (sqrt(n) * stdev)
+pnorm(sn2, lower.tail=FALSE)
+
+
+```
+
+
+
+### $Y_{365} \geq 120$ 
+```{r}
+
+y365 <- 120
+
+s364 <- y365-y1
+
+sn3 <- (s364 - (n*mu)) / (sqrt(n) * stdev)
+pnorm(sn3, lower.tail=FALSE)
+
+
+```
+
+## Problem 2 
+**Calculate the expected value and variance of the binomial distribution using the moment generating function.**  
+The moment generating function is:  
+$$M_x(t) = \Sigma e^{tx}p(x)$$
+The binomial distribution is:  
+$${ n \choose j}p^jq^{n-j}$$
+
+Substituting this in, we get: 
+$$M_x(t) = \Sigma e^{tx} \cdot { n \choose j}p^jq^{n-j}$$
+This further evaluates to:  
+$$M_x(t) = (pe^{t}+q)^n $$
+
+We also know that:  
+$$E(x) = \mu_1 = M_x'(0)$$
+and $$\sigma^2 = \mu_2  - \mu_1^2 = M_x''(0) - M_x'(0)^2$$
+
+### Expected Value
+We know that the first derivative of the moment generating function evaluated at $t=0$ is the expected value, so we calculate this as: 
+$$M'_x(t) = n(pe^t+q)^{n-1}\cdot pe^t$$
+Evaluated at $t=0$: 
+$$E(x)= \mu_1 = npe^0(pe^0+q)^{n-1}$$
+$$= np(p+q)^{n-1}$$
+We know that $p+q=1$, so: 
+$$ E(x)= \mu_1 =  np$$
+
+### Variance 
+By definition, we know that the variance is:  
+$$\sigma^2 = \mu_2 − \mu_1^2$$
+
+Let's first calculate $M''_x(t)$:   
+$$M''_x(t) = \mu_2 = [npe^t(pe^t+q)^{n-1}]+[npe^t \cdot (n-1)(pe^t+q)^{n-2} \cdot pe^t]$$
+
+Evaluated at $t=0$:  
+
+$$= [npe^0(pe^0+q)^{n-1}]+[npe^0 \cdot (n-1)(pe^0+q)^{n-2} \cdot pe^0]$$
+$$= [np(p+q)^{n-1}]+[np \cdot (n-1)(p+q)^{n-2} \cdot p]$$
+Once again, we know that $p+q=1$, so this simplifies to: 
+$$\mu_2 = np+ np^2(n-1)$$
+Finally, subbing in for our variance equation $\sigma^2 = \mu_2 − \mu_1^2$:  
+$$\sigma^2 = np+ np^2(n-1) - (np)^2$$
+$$= np+ n^2p^2 - np^2 - n^2p^2$$
+
+$$\sigma^2= np- np^2$$
+
+## Problem 3 
+**Calculate the expected value and variance of the exponential distribution using the moment generating function.**  
+We will start out by creating the moment function:  
+$$M_x(t) = \int_0^\infty e^{tx}(\lambda e^{-\lambda x})dx$$ 
+
+$$= \lambda \int_0^\infty e^{x(t -\lambda)}dx$$ 
+When $\lambda < t$: 
+$$= \lambda [\frac{1}{t-\lambda}e^{-\infty}-\frac{1}{t-\lambda}e^{0}]$$
+
+$$M_x(t)= \frac{-\lambda}{t-\lambda} = \frac{\lambda}{\lambda - t} $$
+
+
+### Expected Value
+$$M_x'(t) = \frac{0( \lambda - t) - \lambda(-1)}{(\lambda - t)(\lambda - t)}$$ 
+$$= \frac{\lambda}{\lambda^2 - 2 \lambda t + t^2}$$ 
+
+Evaluated at $t=0$: 
+$$E(x) = \mu_1 = \frac{\lambda}{\lambda^2} = \frac{1}{\lambda}$$ 
+
+### Variance 
+$$M_x''(t) =\mu_2 = \frac{0(\lambda^2 - 2 \lambda t + t^2) - \lambda (-2 \lambda + 2t)}{(\lambda^2 - 2 \lambda t + t^2)(\lambda^2 - 2 \lambda t + t^2)}$$
+
+$$ = \frac{ 2\lambda^2 - 2 \lambda t}{\lambda^4 - 2 \lambda^3 t + \lambda^2t^2 - 2 \lambda^3 t + 4\lambda^2 t^2 - 2\lambda t^3 + t^2 \lambda^2 - 2 \lambda t^3 + t^4}$$ 
+
+$$ = \frac{ 2\lambda(\lambda - t)}{\lambda^4 + t^4 - 4 \lambda^3 t + 6\lambda^2t^2 - 4 \lambda t^3}$$
+
+Evaluated at $t=0$: 
+$$ = \frac{ 2\lambda^2}{\lambda^4} = \frac{2}{\lambda^2}$$
+
+Finally, subbing in for our variance equation $\sigma^2 = \mu_2 − \mu_1^2$: 
+$$\sigma^2 = \frac{2}{\lambda^2} - (\frac{1}{\lambda})^2$$
+
+$$= \frac{2}{\lambda^2} - \frac{1}{\lambda^2} $$
+
+$$\sigma^2 = \frac{1}{\lambda^2}$$
