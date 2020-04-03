@@ -1,0 +1,66 @@
+---
+title: "DATA 605 - Assignment 10"
+author: "Amber Ferger"
+date: "3/30/2020"
+output: html_document
+---
+
+## Problem  
+Smith is in jail and has \$1; he can get out on bail if he has \$8. A guard agrees to make a series of bets with him. If Smith bets A dollars, he wins A dollars with probability 0.4 and loses A dollars with probability 0.6.  
+
+Find the probability that he wins \$8 before losing all of his money if:  
+
+a. he bets \$1 each time (timid strategy)
+b. he bets, each time, as much as possible but not more than necessary to bring his fortune up to \$8 (timid strategy)
+c. Which strategy gives Smith the better chance of getting out of jail?
+
+## Solution 
+This is an example of the **Gambler's Ruin** problem. (Section 12.2 in the probability text) In such a scenario, the individual starts with a stake, $k$ (\$1), and plays until his capital reaches the value $M$ (\$8) or the value $0$.  
+  
+We will define $p_k$ to be the probability that Smith's stake reaches $M$ without ever having reached $0$, given that the initial state is $k$. We know that $p_0=0$ because there is a 0% chance of reaching $M$ before $0$ if Smith starts with $k=\$0$. Similarly, we know that $p_M=1$ because there is a 100% chance of reaching $M$ before $0$ if Smith starts with $k=\$M$.  
+  
+We can define $p_k$ as: 
+$$p_k = pp_{k+1}+qp_{k-1}$$
+
+We know this because if the stake equals $k$, and Smith plays one game, then the stake becomes $k + 1$ with probability $p$ and $k−1$ with probability $q$. In the first case, the probability of reaching $M$ before $0$ is $p_{k+1}$ and in the second case, it is $p_{k−1}$.  
+  
+We can show that for any value of $k$ where $0 \leq k \leq M$,
+$$p_k − p_0 = − \frac{(\frac{q}{p})^k - 1}{(\frac{q}{p})^M - 1}$$
+
+Since $p_0 = 0$, our final equation becomes: 
+$$p_k = \frac{ 1- (\frac{q}{p})^k}{1 - (\frac{q}{p})^M}$$
+
+```{r}
+k <- 1
+M <- 8
+p <- 0.4
+q <- 0.6
+```
+
+
+### (a) Probability of winning $8 if he bets $1 every time
+```{r}
+
+probWin <- (1 - (q/p)^k)/ (1-(q/p)^M)
+probWin
+
+```
+
+### (b) Probability of winning $8 if he bets, each time, as much as possible but not more than necessary to bring his fortune up to $8  
+
+We know that Smith can only bet as much money as he has at any stage. We also know that his probability of winning, $p=0.4$ remains constant at every stage. Let's map this out:  
+
+* At stage 1, Smith starts with $\$1$, so he can bet a maximum of $\$1$. If we wins, his new stake is $k=\$2$. 
+* At stage 2, Smith starts with $\$2$, so he can bet a maximum of $\$2$. If we wins, his new stake is $k=\$4$.
+* At stage 3, Smith starts with $\$4$, so he can bet a maximum of $\$4$. If we wins, his new stake is $k=\$8$. Since having $\$8$ allows Smith to get out on bail, we can stop at this stage. 
+
+We know that Smith must win 3 times in a row in order to make bail. Since each stage has the probability $p=0.4$ of winning, we know that the final probability of making bail using this strategy is $p^3$.
+
+```{r}
+
+p^3
+
+```
+
+### (c) Which strategy gives Smith the better chance of getting out of jail?
+The first strategy gives Smith a $2.03\%$ chance of getting out of jail, whereas the second strategy gives him a $6.4\%$ chance of getting out, so the second strategy is better. 
