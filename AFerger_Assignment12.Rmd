@@ -1,0 +1,99 @@
+---
+title: "DATA 605 - Assignment 12"
+author: "Amber Ferger"
+date: "4/13/2020"
+output: html_document
+---
+
+## Problem
+
+**Using the *cars* dataset in R, build a linear model for stopping distance as a function of speed and replicate the analysis of your textbook chapter 3 (visualization, quality evaluation of the model, and residual analysis.)**
+
+## Solution
+
+### Data Specs
+
+* The *cars* dataset contains $50$ rows and $2$ columns.
+* The explanatory variable will be **speed** and the response variable will be **dist**. 
+* Intuitively, I expect that as speed increases, so does stopping distance. 
+
+### Load and visualize the data
+
+We can see that the plot confirms the intuition: 
+```{r}
+
+data(cars)
+plot(cars$speed, cars$dist, main="Speed vs Distance", xlab="Speed", ylab="Distance")
+
+```
+
+### Linear Model
+We will now fit a linear model to the data.
+```{r}
+
+carsLM <- lm(cars$dist ~ cars$speed)
+carsLM
+
+```
+
+Our y-intercept is negative, which does not transfer to the situation (we cannot have a negative stopping distance). In this case we will assume that if the speed is $0$, the stopping distance is also $0$. 
+
+Next, we'll plot the original data with the best fit line: 
+```{r}
+
+plot(cars$speed, cars$dist, main="Speed vs Distance", xlab="Speed", ylab="Distance")
+abline(carsLM)
+
+```
+
+The model doesn't look too bad -- we can see that for the most part, the data doesn't stray too far from the line. We can't see any blaring outliers and the distance of the points from the line seems pretty consistent. 
+
+### Evaluating the Model
+Let's take a look at the summary information of our model: 
+```{r}
+
+summary(carsLM)
+
+```
+
+**RESIDUALS:** The residuals should be balanced and close to the mean of $0$. The median should have a value near $0$,  min/max values should be about the same magnitude, and the first and third quartile should also be about the same magnitude. Ultimately, this would mean that the actual observations aren't too far from the predicted values and there isn't much variance in the predictive error.  
+
+The median of $-2.272$ is close to $0$. The quartiles have almost identical magnitude and the min and max values aren't too drasically different in magnitude. Overall, our preliminary analysis of the residuals doesn't show any major issues.   
+
+**RESIDUAL STANDARD ERROR:** At the bottom of the summary, we can see the Residual Standard Error of $15.38$. This measures the variation in the residuals. As a general rule, this value should be $1.5$ times the quartile values. For the first quartile: $9.525 * 1.5 = 14.29$ and for the third quartile: $9.215 *1.5 = 13.82$. Thus, our residual standard error is about $1.5$ times the quartile values.
+
+**ERROR:** As a general rule, a good model has standard errors that are at least five to ten times smaller than the corresponding coefficients. In this case, the standard error for the intercept is $2.601$ times smaller than the coefficient and the standard error for the speed variable is $9.464$ times smaller. What this means is that there is significant variability in the intercept but little variability in the speed. 
+
+**SIGNIFICANCE:** The next thing we will look at is the p-value for the speed factor. This measures the probability that the factor is *not* important in the model. The smaller the value, the more significant the factor is. In this case, we have a p-value of $1.49e-12$, which means that we can reject the null hypothesis (the factor is not important), and accept the alternative (that it is important).
+
+**MULTIPLE R-SQUARED:** This measures how well our model describes the data. Our R-squared value of $0.6511$ means that the model explains $65.11\%$ of the data's variation. 
+
+### Plotting the residuals
+To dig a bit deeper, we can examine the residuals. If a model is a good fit for the data, we should expect to see the residuals with no apparent pattern. 
+
+```{r}
+
+plot(fitted(carsLM),resid(carsLM))
+
+```
+
+In this case, we can see that the residuals tend to increase as we move to the right. This suggests that using speed alone as a predictor for stopping distance does not sufficiently explain the data. 
+
+We can take this analysis one step further. In a good model we expect the residuals to be normally distributed. By graphing the data in a Q-Q plot, we can see how well the observations follow the line. If they fit the line well, we know that the data is normally distributed.  
+
+```{r}
+
+qqnorm(resid(carsLM))
+qqline(resid(carsLM))
+
+```
+
+We can see that the data strays from the line at the ends. This indicates that it is not normally distributed. 
+
+
+### Conclusions
+From this analysis, we can see that modeling the stopping distance using one-factor linear regression with speed as the explanatory variable is not ideal: 
+
+* There is a some variance in the residuals. In a plot of the residuals, we see that the magnitudes of the error grows as we move to the right. 
+* The residuals are not normally distributed. We can see from the Q-Q plot that the data strays from the line towards the ends.
+* The model only accounts for $65.11\%$ of the variation in the data. In order to make a more accurate model, we might consider adding in additional explanatory variables.  
