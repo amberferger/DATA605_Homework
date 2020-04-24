@@ -1,0 +1,144 @@
+---
+title: "DATA 605 - Assignment 12"
+author: "Amber Ferger"
+date: "4/20/2020"
+output: html_document
+---
+
+## Data Description
+
+**The attached *who.csv* dataset contains real-world data from 2008. The variables included are: **  
+
+* **$Country$: name of country**
+* **$LifeExp$: average life expectancy for the country in years**
+* **$InfantSurvival$: proportion of those surviving to one year or more**
+* **$Under5Survival$: proportion of those surviving to five years or more**
+* **$TBFree$: proportion of the population without TB**
+* **$PropMD$: proportion of the population who are MDs**
+* **$PropRN$: proportion of the population are RNs**
+* **$PersExp$: mean personal expenditures on healthcare in US dollars at average exchange rate**
+* **$GovtExp$: mean government expenditures per capita on healthcare, US dollars at average exchange rate**
+* **$TotExp$: sum of personal and government expenditures**
+
+```{r}
+library(readr)
+
+who.df <- read_csv('https://raw.githubusercontent.com/amberferger/DATA605_Homework/master/AFerger_Assignment12_Data.csv')
+
+```
+
+## Problem 1
+**Provide a scatterplot of $LifeExp~TotExp$ and run simple linear regression. Do not transform the variables. Provide and interpret the F statistics, $R^2$, standard error, and p-values only. Discuss whether the assumptions of simple linear regression met.**
+
+```{r}
+
+plot(who.df$TotExp, who.df$LifeExp, main="Total Expenditure vs Life Expectancy", xlab="Total Expenditure", ylab="Life Expectancy")
+```
+
+```{r}
+
+who.lm <- lm(LifeExp~TotExp, dat = who.df)
+summary(who.lm)
+
+```
+
+* **F-statistic**: The F-test compares the current model to a model with one fewer predictor. If the current model is better than the reduced model, the p-value will be small. In this case, the p-value associated with the f-test is very small $(7.714e-14)$, so we can conclude that this model fits the data better than one with no independent variables. 
+* $R^2$: This measures how well our model describes the data. The $R^2$ value of $0.2577$ means that the model explains only $25.77\%$ of the data’s variation.
+* **Standard Error**:  This measures the variation in the residuals. As a general rule, this value should be 1.5 times the quartile values. For the first quartile: $4.778∗1.5 = 7.167$ and for the third quartile: $7.116∗1.5 = 10.674$. It is about 24% higher than the first quartile and 13% lower than the third quartile. 
+* **P-Values**: This measures the probability that the factor is *not* important in the model. The smaller the value, the more significant the factor is. Both of the p-values are well below the standard threshold of $0.05$, so we know that the total expenditure is significant. 
+
+**Are assumptions of linear regression met?** No -- we can see off the bat that the data does not seem to follow a linear trend (it looks logarithmic). Additionally, the variable that we've used only accounts for $25.77\%$ of the variance, so other factors must be at play. 
+
+
+## Problem 2
+**Raise life expectancy to the 4.6 power (ie. $LifeExp^{4.6}$). Raise total expenditure to the 0.06 power (nearly a log transform, $TotExp^{0.06}$). Plot $LifeExp^{4.6}$ as a function of $TotExp^{0.06}$ and re-run the simple regression model using the transformed variables. Provide and interpret the F statistics, $R^2$, standard error, and p-values. Which model is "better"?**
+
+```{r}
+
+who.df$LifeExp46 <- who.df$LifeExp^(4.6)
+who.df$TotExp06 <- who.df$TotExp^(0.06)
+
+plot(who.df$TotExp06, who.df$LifeExp46, main="Total Expenditure vs Life Expectancy - Transformed", xlab="Total Expenditure", ylab="Life Expectancy")
+```
+
+
+```{r}
+who2.lm <- lm(LifeExp46~TotExp06, data = who.df)
+summary(who2.lm)
+  
+```
+
+* **F-statistic**: Once again, we see that the p-value associated with the F-statistic is very small (and it didn't change much from the last model), so we know that this model fits the data better than one with no independent variables. 
+* $R^2$: The $R^2$ value has increased to $0.7298$, so we know that the model accounts for $72.98\%$ of the data’s variation. 
+* **Standard Error**: The standard error is about $10.52\%$ higher than 1.5 times our first quartile $(53,978,977 * 1.5 = 80,968,466)$ and $1.97\%$ higher than 1.5 times the third quartile $(59,139,231 * 1.5 = 88,708,847)$. This is closer than our previous model.  
+* **P-Values**: The p-value associated with our newly derived $TotExp06$ variable is much less than the standard threshold of $0.05$, so the variable is significant.
+
+**Which model is better?** This model is much better because:
+
+1. The plot looks more linear.
+2. The $R^2$ value has increased drastically.
+3. The standard error more closely matches 1.5 times the first and third quartiles.
+
+
+
+## Problem 3
+**Using the results from 2, forecast life expectancy when $TotExp^{0.06} = 1.5$. Then forecast life expectancy when $TotExp^{0.06}= 2.5$.**  
+We know that our model predicts $LifeExp^{4.6}$, so in order to translate this to just $LifeExp$, we will need to do the following: $predictedValue^{\frac{5}{23}}$:
+
+```{r}
+
+predTotExp1 <- data.frame(TotExp06 = 1.5)
+predTotExp2 <- data.frame(TotExp06 = 2.5)
+
+pred1 <- predict(who2.lm, newdata=predTotExp1)
+pred2 <- predict(who2.lm, newdata=predTotExp2)
+
+paste0('For total expenditure = 1.5, the life expectancy is: ', pred1^(5/23))
+paste0('For total expenditure = 2.5, the life expectancy is: ', pred2^(5/23))
+
+```
+
+## Problem 4
+**Build the following multiple refression model and interpret the F statistic, $R^2$, standard error, and p-values. How good is the model?**  
+$$LifeExp = b_0 + b_1PropMD + b_2TotExp + b_3(PropMD*TotExp) $$
+
+```{r}
+
+who.df$interaxn_term <- who.df$PropMD * who.df$TotExp
+
+who3.lm <- lm(LifeExp ~ PropMD + TotExp + interaxn_term, data = who.df)
+summary(who3.lm)
+
+
+```
+
+* **F-statistic**: The p-value associated with the F-statistic is very small (and it didn't change much from the last model), so we know that this model fits the data better than one with just 2 variables. 
+* $R^2$: The $R^2$ value has decreased to $0.3574$, so we know that the model accounts for only $35.74\%$ of the data’s variation. 
+* **Standard Error**: The standard error is about $29.29\%$ higher than 1.5 times our first quartile $(4.132 * 1.5 = 6.198)$ and $11.92\%$ lower than 1.5 times the third quartile $(6.540 * 1.5 = 9.81)$. This is worse than our previous model.  
+* **P-Values**: The p-values associated with all three of the variables are much less than the standard threshold of $0.05$, so all variables are significant.
+
+**How good is the model?** This model is not great at fitting the data because the $R^2$ value is low and the standard error is not around 1.5 times the first and third quartiles. Our previous model fit the data better. 
+
+
+## Problem 5
+**Forecast $LifeExp$ when $PropMD=0.3$ and $TotExp = 14$. Does this forecast seem realistic? Why or why not?**
+```{r}
+
+predPropMD <- 0.3
+predTotExp3 <- 14
+predInteraxn <- predPropMD * predTotExp3
+
+predData <- data.frame(PropMD = predPropMD,
+                       TotExp = predTotExp3,
+                       interaxn_term = predInteraxn)
+
+
+pred3 <- predict(who3.lm, newdata=predData)
+
+pred3
+
+
+```
+
+**Does this forecast seem realistic? Why or why not?** No, this forecast does not seem realistic because an individual is not going to live to be 512 years old. 
+
