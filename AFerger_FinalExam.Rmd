@@ -8,7 +8,6 @@ output: html_document
 ```{r, include=FALSE}
 
 library(tidyverse)
-library(dplyr)
 library(reshape)
 library(matlib)
 library(matrixcalc)
@@ -199,8 +198,10 @@ summary(trainSet)
 
 ```{r}
 
+# trainset[c('SalePrice', 'OverallQual', 'OverallCond')]
+
 spMatrix <- trainSet %>%
-  select(SalePrice, OverallQual, OverallCond) 
+  dplyr::select(SalePrice, OverallQual, OverallCond) 
 
 pairs(spMatrix, gap=0.2)
 
@@ -216,7 +217,7 @@ pairs(spMatrix, gap=0.2)
 ```{r}
 
 matrixVals <- trainSet %>%
-  select(LotArea, TotalBsmtSF, GrLivArea) 
+  dplyr::select(LotArea, TotalBsmtSF, GrLivArea) 
 
 corrMatrix <- cor(matrixVals)
 corrMatrix
@@ -329,8 +330,188 @@ exPDF <- fitdistr(trainSet$X1stFlrSF, "exponential")
 lam <- as.numeric(exPDF$estimate)
 samps <- rexp(1000,lam)
 
+hist(samps,
+     main="Distribution of X1stFlrSF - Exponential")
+
 ```
+
+```{r}
+
+hist(trainSet$X1stFlrSF,
+     main="Distribution of X1stFlrSF")
+
+```
+
+
+
+Percentiles for exponential distribution:
+```{r}
+
+qexp(c(.05,0.95), rate=exPDF$estimate)
+
+```
+
+Confidence Interval for Normal Distribution:
+```{r}
+
+n <- nrow(trainSet)
+avg <- mean(trainSet$X1stFlrSF)
+sdev <- sd(trainSet$X1stFlrSF)
+
+ser <- (pnorm(0.95)*sdev)/sqrt(n)
+lower <- avg - ser
+upper <- avg + ser
+
+lower
+upper
+
+```
+
+Percentiles for empirical data:
+```{r}
+quantile(trainSet$X1stFlrSF, c(0.05,0.95))
+
+```
+
+The exponential model is not a good model for the data.
+
+It gives the following: 
+
+* $5^{th}$ percentile: 59.63495 
+* $95^{th}$ percentile: 3482.91836
+
+whereas the empirical data shows:
+
+* $5^{th}$ percentile: 672.95
+* $95^{th}$ percentile: 1831.25
+
   
 ### Modeling (10 points) 
 **Build some type of multiple regression  model and submit your model to the competition board. Provide your complete model summary and results with analysis. Report your Kaggle.com user name and score.**
 
+**Username: amberferger, Score: 0.20498**
+
+After a number of trials (and errors), I've come up with the following set of features to use:
+
+**From dataset:**
+
+* GrLivArea 
+* OverallQual 
+* YearBuilt 
+* LotArea
+* GarageCars
+* KitchenQual
+* 2ndFlrSF
+
+**Engineered features:**
+
+* RemodInd - indicator if the house has been remodeled
+* PropFront - proportion of the yard that is frontage
+* PropBsmtFin - proportion of the basement that is finished 
+* funcTyp - 1 if Functional = "Typ"
+* RR - 1 if the Condition1 = "Norm"
+* nbrhd - 1 if the house is in a set of neighborhoods
+
+```{r}
+
+multReg <- trainSet
+
+multReg$RemodInd <- with(multReg, ifelse(YearRemodAdd==YearBuilt, 0,1))
+
+multReg$PropFront <- with(multReg, LotFrontage/LotArea)
+multReg$PropBsmtFin <- with(multReg, (TotalBsmtSF - BsmtUnfSF)/TotalBsmtSF)
+
+multReg$funcTyp <- with(multReg, ifelse(Functional == 'Typ', 1,0))
+
+multReg$RR <- with(multReg, ifelse(Condition1 == 'Norm', 1, 0))
+multReg$nbrhd <- with(multReg, ifelse(Neighborhood == 'StoneBr' | Neighborhood == 'NridgHt' | Neighborhood == 'NoRidge' | Neighborhood == 'Somerst' | Neighborhood == 'Crawfor',1,0))
+
+multReg$KitchenQual <- with(multReg, ifelse(is.null(KitchenQual) | is.na(KitchenQual),'',KitchenQual))
+
+multReg <- multReg %>%
+  dplyr::select(SalePrice,GrLivArea, OverallQual, YearBuilt, 
+                RemodInd, LotArea, PropFront, PropBsmtFin, 
+                GarageCars, funcTyp, KitchenQual, 
+                X2ndFlrSF, RR, nbrhd)
+
+# we will replace all nulls with 0
+multReg[is.na(multReg)] <- 0
+
+```
+
+
+```{r}
+
+multReg.lm <- lm(SalePrice ~ GrLivArea  + OverallQual + YearBuilt + RemodInd + LotArea + PropFront + PropBsmtFin  + GarageCars  + funcTyp + KitchenQual + X2ndFlrSF + RR + nbrhd , data = multReg)
+
+summary(multReg.lm)
+
+```
+
+**Analysis:**  
+
+* **F-statistic:* The F-test compares the current model to a model with one fewer predictor. If the current model is better than the reduced model, the p-value will be small. In this case, the p-value associated with the f-test is very small $(< 2.2e-16)$, so we can conclude that this model fits the data better than one with one fewer predictor. 
+* **Adjusted** $R^2$: The value of $0.8254$ means this set of features accounts for ~$83\%$ of the variance in Sale Price.
+* **P-Values**: This measures the probability that the factor is not important in the model. The smaller the value, the more significant the factor is. All of the p-values are well below the threshold of $0.05$, so we know that all variables are significant.
+
+We will now plot the residuals:
+
+```{r}
+plot(fitted(multReg.lm),resid(multReg.lm))
+
+```
+A good model will have a residual plot where (1) there’s no clear pattern and (2) the points hover both above and below 0. The curved pattern in the plot of our residuals indicates that we don’t have a great model. This indicates that we do not do as well predicting on higher-priced homes. 
+
+Additionally, in a good model we expect the residuals to be normally distributed. By graphing the data in a Q-Q plot, we can see how well the observations follow the line. If they fit the line well, we know that the data is normally distributed.
+
+```{r}
+
+qqnorm(resid(multReg.lm))
+qqline(resid(multReg.lm))
+
+```
+
+There is clear deviation from the line in both ends of the plot, so this further shows that we do poorly at predicting the high and low priced houses.
+
+
+Finally, we will make predictions on our test data:
+```{r}
+
+testing <- testSet
+
+testing$RemodInd <- with(testing, ifelse(YearRemodAdd==YearBuilt, 0,1))
+
+testing$PropFront <- with(testing, LotFrontage/LotArea)
+testing$PropBsmtFin <- with(testing, (TotalBsmtSF - BsmtUnfSF)/TotalBsmtSF)
+
+testing$funcTyp <- with(testing, ifelse(Functional == 'Typ', 1,0))
+
+testing$RR <- with(testing, ifelse(Condition1 == 'Norm', 1, 0))
+testing$nbrhd <- with(testing, ifelse(Neighborhood == 'StoneBr' | Neighborhood == 'NridgHt' | Neighborhood == 'NoRidge' | Neighborhood == 'Somerst' | Neighborhood == 'Crawfor',1,0))
+
+testing$KitchenQual <- with(testing, ifelse(is.null(KitchenQual) | is.na(KitchenQual),'',KitchenQual))
+
+testing$KitchenQual <- as.integer(testing$KitchenQual)
+
+testing <- testing %>%
+  dplyr::select(Id, GrLivArea, OverallQual, YearBuilt, 
+                RemodInd, LotArea, PropFront, PropBsmtFin, 
+                GarageCars, funcTyp, KitchenQual, 
+                X2ndFlrSF, RR, nbrhd)
+
+
+testing[is.na(testing)] <- 0
+
+pred <- predict(multReg.lm, newdata=testing)
+finalPred <- pred %>% 
+  as_tibble
+
+finalPred$Id <- testSet$Id
+
+finalPred <- finalPred %>%
+  dplyr::select(Id,
+         SalePrice = value)
+
+#write.csv(finalPred,file='finalSubmission.csv', row.names=FALSE)
+
+```
