@@ -375,30 +375,92 @@ summary {
 <pre class="r"><code>set.seed(124)
 n &lt;- 10000
 N &lt;- 10
+mu &lt;- (N+1)/2
+sd &lt;- (N+1)/2
 X &lt;- runif(n, min = 1, max = N)
-Y &lt;- rnorm(n, mean=(N+1)/2, sd = (N+1)/2)</code></pre>
-<div id="probability" class="section level3">
-<h3>Probability</h3>
+Y &lt;- rnorm(n, mean= mu, sd = sd)</code></pre>
+<div id="probability-5-pts" class="section level3">
+<h3>Probability (5 pts)</h3>
 <p><strong>Calculate as a minimum the below probabilities <span class="math inline">\(a\)</span> through <span class="math inline">\(c\)</span>. Assume the small letter “x” is estimated as the median of the <span class="math inline">\(X\)</span> variable, and the small letter “y” is estimated as the 1st quartile of the <span class="math inline">\(Y\)</span> variable. Interpret the meaning of all probabilities.</strong></p>
-<p><strong><em>(5 points)</em></strong><br />
-<strong>a. P(X&gt;x | X&gt;y)</strong><br />
-<span class="math display">\[P(X&gt;x | X&gt;y) = \frac{P(X&gt;x \cap X&gt;y)}{P(X&gt;y)} = \frac{P(X&gt;x) P(X&gt;y)}{P(X&gt;y)}\]</span></p>
 <pre class="r"><code>x &lt;- median(X)
 y &lt;- as.numeric(quantile(Y)[2])
+z &lt;- (y - mu) / sd 
 
-
-pXx &lt;- 1 - ((x-min(X))*(1/N))
-PXy &lt;- 1 - ((y-min(X)) * (1/N))
-
-(pXx*PXy)/PXy</code></pre>
+pXlx &lt;- ((x-min(X))*(1/N))
+pXgx &lt;- 1 - ((x-min(X))*(1/N))
+pXgy &lt;- 1 - ((y-min(X)) * (1/N))
+pYgy &lt;- 1 - pnorm(z)
+pYly &lt;- pnorm(z)</code></pre>
+<p><strong>a. P(X&gt;x | X&gt;y)</strong><br />
+Conditional probability - probability that <span class="math inline">\(X\)</span> is greater than <span class="math inline">\(x\)</span> given that <span class="math inline">\(X\)</span> is greater than <span class="math inline">\(y\)</span>.</p>
+<p><span class="math display">\[P(X&gt;x | X&gt;y) = \frac{P(X&gt;x \cap X&gt;y)}{P(X&gt;y)} = \frac{P(X&gt;x) P(X&gt;y)}{P(X&gt;y)}\]</span></p>
+<pre class="r"><code>(pXgx*pXgy)/pXgy</code></pre>
 <pre><code>## [1] 0.5463136</code></pre>
 <p><strong>b. P(X&gt;x, Y&gt;y)</strong><br />
-<span class="math display">\[P(X&gt;x, Y&gt;y) = P(X&gt;x \cap X&gt;y) = P(X&gt;x) P(X&gt;y)\]</span></p>
-<pre class="r"><code>pXx*PXy</code></pre>
-<pre><code>## [1] 0.499789</code></pre>
-<p><strong>c. P(X&lt;x | X&gt;y)</strong> <span class="math display">\[P(X&lt;x | X&gt;y) = \frac{P(X&lt;x \cap X&gt;y)}{P(X&gt;y)} = \frac{P(X&lt;x) P(X&gt;y)}{P(X&gt;y)}\]</span></p>
-<p><strong><em>(5 points)</em> Investigate whether <span class="math inline">\(P(X&gt;x\)</span> <span class="math inline">\(and\)</span> <span class="math inline">\(Y&gt;y) = P(X&gt;x)P(Y&gt;y)\)</span> by building a table and evaluating the marginal and joint probabilities.</strong></p>
-<p><strong><em>(5 points)</em> Check to see if independence holds by using Fisher’s Exact Test and the Chi Square Test. What is the difference between the two? Which is most appropriate?</strong></p>
+Joint Probability - Probability that <span class="math inline">\(X\)</span> is greater than <span class="math inline">\(x\)</span> and <span class="math inline">\(Y\)</span> is greater than <span class="math inline">\(y\)</span>. <span class="math display">\[P(X&gt;x, Y&gt;y) = P(X&gt;x \cap Y&gt;y) = P(X&gt;x) P(Y&gt;y)\]</span></p>
+<pre class="r"><code>pXgx*pYgy</code></pre>
+<pre><code>## [1] 0.4077384</code></pre>
+<p><strong>c. P(X&lt;x | X&gt;y)</strong> Conditional probability - probability that <span class="math inline">\(X\)</span> is less than <span class="math inline">\(x\)</span> given that <span class="math inline">\(X\)</span> is greater than <span class="math inline">\(y\)</span>. <span class="math display">\[P(X&lt;x | X&gt;y) = \frac{P(X&lt;x \cap X&gt;y)}{P(X&gt;y)} = \frac{P(X&lt;x) P(X&gt;y)}{P(X&gt;y)}\]</span></p>
+<pre class="r"><code>(pXlx*pXgy)/pXgy</code></pre>
+<pre><code>## [1] 0.4536864</code></pre>
+</div>
+<div id="probability-5-pts-1" class="section level3">
+<h3>Probability (5 pts)</h3>
+<p><strong>Investigate whether <span class="math inline">\(P(X&gt;x\)</span> <span class="math inline">\(and\)</span> <span class="math inline">\(Y&gt;y) = P(X&gt;x)P(Y&gt;y)\)</span> by building a table and evaluating the marginal and joint probabilities.</strong></p>
+<p>We will create a matrix of joint probabilities and then calculate the marginal probabilities. We will then compare the joint probability corresponding to record <span class="math inline">\([1,1]\)</span> in the matrix to the product of the marginal probabilities (records <span class="math inline">\([3,1]\)</span> and <span class="math inline">\([1,3]\)</span> in the matrix).</p>
+<pre class="r"><code># calculate joint probabilities
+a &lt;- pXgx * pYgy
+b &lt;- pXgx * pYly
+c &lt;- pXlx * pYgy
+d &lt;- pXlx * pYly
+
+# create matrix 
+jointMatrix &lt;- matrix(c(a,b,c,d), 
+                  nrow=2)
+
+# add row totals
+fullMatrix &lt;- rbind(jointMatrix, c(a+b, c+d))
+
+# add column totals
+fullMatrix &lt;- cbind(fullMatrix, c(a+c, b+d, NA)) 
+
+colnames(fullMatrix) &lt;- c(&#39;P(X&gt;x)&#39;, &#39;P(X&lt;x)&#39;, &#39;Marginal Prob Y&#39;)
+rownames(fullMatrix) &lt;- c(&#39;P(Y&gt;y)&#39;, &#39;P(Y&lt;y)&#39;, &#39;Marginal Prob X&#39;)
+
+
+fullMatrix</code></pre>
+<pre><code>##                    P(X&gt;x)    P(X&lt;x) Marginal Prob Y
+## P(Y&gt;y)          0.4077384 0.3386066        0.746345
+## P(Y&lt;y)          0.1385752 0.1150798        0.253655
+## Marginal Prob X 0.5463136 0.4536864              NA</code></pre>
+<pre class="r"><code>margProb &lt;- fullMatrix[3,1] * fullMatrix[1,3]
+jointProb &lt;- fullMatrix[1,1]
+
+margProb </code></pre>
+<pre><code>## [1] 0.4077384</code></pre>
+<pre class="r"><code>jointProb</code></pre>
+<pre><code>## [1] 0.4077384</code></pre>
+<p>The two probabilities are equal.</p>
+</div>
+<div id="probability-5-pts-2" class="section level3">
+<h3>Probability (5 pts)</h3>
+<p><strong>Check to see if independence holds by using Fisher’s Exact Test and the Chi Square Test. What is the difference between the two? Which is most appropriate?</strong></p>
+<p>Random variables are independent if neither variable affects the probability distribution of the other. Both Fisher’s and Chi-Square examine the likelihood of independence of given variables.</p>
+<p>In both cases, we test the hypothesis that the variables are independent:</p>
+<ul>
+<li><span class="math inline">\(H_0\)</span>: The two variables are independent.</li>
+<li><span class="math inline">\(H_A\)</span>: The two variables are not independent.</li>
+</ul>
+<p>A <span class="math inline">\(p-value \leq 0.05\)</span> allows us to reject <span class="math inline">\(H_0\)</span> and accept <span class="math inline">\(H_A\)</span>. In this case, we can prove that the two variables are independent if the <span class="math inline">\(p-value &gt; 0.05\)</span>.</p>
+<pre class="r"><code>fisher.result &lt;- fisher.test(jointMatrix)
+print(fisher.result$p.value)</code></pre>
+<pre><code>## [1] 1</code></pre>
+<pre class="r"><code>chi.result &lt;- chisq.test(jointMatrix)
+print(chi.result$p.value)</code></pre>
+<pre><code>## [1] 1</code></pre>
+<p>In both instances, the p-value is very high <span class="math inline">\((1)\)</span>, which means we accept <span class="math inline">\(H_0\)</span> - the variables are independent.</p>
+<p>The chi-square test can be used for any sized contingency table, whereas Fisher’s exact test can only be used for <span class="math inline">\(2x2\)</span> contingency tables. Additionally, from reading online, it looks like Fisher’s exact test is generally preferred for small sample sizes, whereas chi-square may be unreliable if the sample is too small.</p>
+<p>In this case, I would recommend using the chi-square test because we have 2 random variables that both have <span class="math inline">\(10,000\)</span> numbers, to this test might be more accurate.</p>
 </div>
 </div>
 <div id="problem-2" class="section level1">
@@ -594,16 +656,97 @@ pairs(spMatrix, gap=0.2)</code></pre>
 <pre class="r"><code>matrixVals &lt;- trainSet %&gt;%
   select(LotArea, TotalBsmtSF, GrLivArea) 
 
-cor(matrixVals)</code></pre>
+corrMatrix &lt;- cor(matrixVals)
+corrMatrix</code></pre>
 <pre><code>##               LotArea TotalBsmtSF GrLivArea
 ## LotArea     1.0000000   0.2608331 0.2631162
 ## TotalBsmtSF 0.2608331   1.0000000 0.4548682
 ## GrLivArea   0.2631162   0.4548682 1.0000000</code></pre>
 <p>None of the variables appear to be that correlated – the highest correlation is between GrLivArea and TotalBsmtSF.</p>
-<p>Test the hypotheses that the correlations between each pairwise set of variables is 0 and provide an 80% confidence interval. Discuss the meaning of your analysis. Would you be worried about familywise error? Why or why not?</p>
-<p><strong><em>Linear Algebra and Correlation (5 points)</em>: Invert your correlation matrix from above. (This is known as the precision matrix and contains variance inflation factors on the diagonal.) Multiply the correlation matrix by the precision matrix, and then multiply the precision matrix by the correlation matrix. Conduct LU decomposition on the matrix. </strong></p>
-<p><strong><em>Calculus-Based Probability &amp; Statistics (5 points)</em>: Many times, it makes sense to fit a closed form distribution to data. Select a variable in the Kaggle.com training dataset that is skewed to the right, shift it so that the minimum value is absolutely above zero if necessary. Then load the MASS package and run fitdistr to fit an exponential probability density function. (See <a href="https://stat.ethz.ch/R-manual/R-devel/library/MASS/html/fitdistr.html" class="uri">https://stat.ethz.ch/R-manual/R-devel/library/MASS/html/fitdistr.html</a> ). Find the optimal value of <span class="math inline">\(\lambda\)</span> for this distribution, and then take <span class="math inline">\(1,000\)</span> samples from this exponential distribution using this value (e.g., <span class="math inline">\(rexp(1,000, \lambda)\)</span>). Plot a histogram and compare it with a histogram of your original variable. Using the exponential pdf, find the <span class="math inline">\(5^{th}\)</span> and <span class="math inline">\(95^{th}\)</span> percentiles using the cumulative distribution function (CDF). Also generate a <span class="math inline">\(95\%\)</span> confidence interval from the empirical data, assuming normality. Finally, provide the empirical <span class="math inline">\(5^{th}\)</span> percentile and <span class="math inline">\(95^{th}\)</span> percentile of the data. Discuss.</strong></p>
-<p><strong><em>Modeling (10 points)</em>: Build some type of multiple regression model and submit your model to the competition board. Provide your complete model summary and results with analysis. Report your Kaggle.com user name and score.</strong></p>
+</div>
+<div id="pairwise-correlations" class="section level3">
+<h3>Pairwise correlations</h3>
+<p>For this analysis, we will assume the following:</p>
+<ul>
+<li><span class="math inline">\(H_0\)</span>: The true correlation between the variables is <span class="math inline">\(0\)</span>.</li>
+<li><span class="math inline">\(H_A\)</span>: The true correlation between the variables is not <span class="math inline">\(0\)</span>.</li>
+</ul>
+<p>If the <span class="math inline">\(p-value \leq 0.05\)</span>, we will reject <span class="math inline">\(H_0\)</span> and accept <span class="math inline">\(H_A\)</span>. This would mean that there is a non-zero correlation between the variables.</p>
+<p><strong>Lot Area vs Total Basement Square footage</strong></p>
+<pre class="r"><code>laBsf &lt;- cor.test(matrixVals$LotArea, matrixVals$TotalBsmtSF, method = &#39;pearson&#39;,conf.level = 0.8)
+
+laBsf$p.value</code></pre>
+<pre><code>## [1] 3.911258e-24</code></pre>
+<p><strong>Lot Area vs Living Area</strong></p>
+<pre class="r"><code>laLa &lt;- cor.test(matrixVals$LotArea, matrixVals$GrLivArea, method = &#39;pearson&#39;,conf.level = 0.8)
+
+laLa$p.value</code></pre>
+<pre><code>## [1] 1.520481e-24</code></pre>
+<p><strong>Total Basement Square footage vs Living Area</strong></p>
+<pre class="r"><code>BsfLa &lt;- cor.test(matrixVals$TotalBsmtSF, matrixVals$GrLivArea, method = &#39;pearson&#39;,conf.level = 0.8)
+
+BsfLa$p.value</code></pre>
+<pre><code>## [1] 1.85787e-75</code></pre>
+<p>In each pairwise-comparison, the <span class="math inline">\(p-value &lt;= 0.05\)</span>, which means that we can reject <span class="math inline">\(H_0\)</span> and accept the null. This means that the variables are not independent of each other - and regardless of how slight, they are all at least somewhat correlated to each other.</p>
+<p>Familywise error is the likelihood of accepting a false positive - in this case, reporting that there is a correlation between variables when in fact they have occurred by chance. Because the <span class="math inline">\(p-values\)</span> are so much lower than <span class="math inline">\(0.05\)</span>, I would not be worried about familywise error.</p>
+</div>
+<div id="linear-algebra-and-correlation-5-points" class="section level3">
+<h3>Linear Algebra and Correlation (5 points)</h3>
+<p><strong>Invert your correlation matrix from above. (This is known as the precision matrix and contains variance inflation factors on the diagonal.) Multiply the correlation matrix by the precision matrix, and then multiply the precision matrix by the correlation matrix. Conduct LU decomposition on the matrix. </strong></p>
+<pre class="r"><code>precMatrix  &lt;- inv(corrMatrix)
+precMatrix</code></pre>
+<pre><code>##                                      
+## [1,]  1.1041806 -0.1965150 -0.2011393
+## [2,] -0.1965150  1.2958576 -0.5377382
+## [3,] -0.2011393 -0.5377382  1.2975230</code></pre>
+<pre class="r"><code>cp &lt;- corrMatrix %*% precMatrix
+pc &lt;- precMatrix %*% corrMatrix
+
+cp</code></pre>
+<pre><code>##                                                     
+## LotArea     1.000000e+00  1.372943e-09  1.342205e-09
+## TotalBsmtSF 2.839125e-09  1.000000e+00 -2.366313e-09
+## GrLivArea   3.033268e-09 -1.772131e-09  1.000000e+00</code></pre>
+<pre class="r"><code>pc</code></pre>
+<pre><code>##           LotArea   TotalBsmtSF     GrLivArea
+## [1,] 1.000000e+00  2.839125e-09  3.033268e-09
+## [2,] 1.372943e-09  1.000000e+00 -1.772131e-09
+## [3,] 1.342205e-09 -2.366313e-09  1.000000e+00</code></pre>
+<p>The precision matrix * correlation matrix is about equal to the correlation matrix * precision matrix, which makes sense because they are inverses.</p>
+<p>LU Decomposition - I am shortcutting for this problem by using the lu.decomposition function from the matrixcalc library. To see a more detailed analysis of the LU decomposition function, please visit: <a href="https://rpubs.com/amberferger/DATA605_HW2_PS2" class="uri">https://rpubs.com/amberferger/DATA605_HW2_PS2</a></p>
+<pre class="r"><code>lu &lt;- lu.decomposition(corrMatrix)
+l &lt;- lu$L
+u &lt;- lu$U
+
+l</code></pre>
+<pre><code>##           [,1]      [,2] [,3]
+## [1,] 1.0000000 0.0000000    0
+## [2,] 0.2608331 1.0000000    0
+## [3,] 0.2631162 0.4144344    1</code></pre>
+<pre class="r"><code>u</code></pre>
+<pre><code>##      [,1]      [,2]      [,3]
+## [1,]    1 0.2608331 0.2631162
+## [2,]    0 0.9319661 0.3862388
+## [3,]    0 0.0000000 0.7706992</code></pre>
+<p>We can check that the LU Decomposition worked by comparing <span class="math inline">\(l * u\)</span> to the original matrix:</p>
+<pre class="r"><code>l %*% u</code></pre>
+<pre><code>##           [,1]      [,2]      [,3]
+## [1,] 1.0000000 0.2608331 0.2631162
+## [2,] 0.2608331 1.0000000 0.4548682
+## [3,] 0.2631162 0.4548682 1.0000000</code></pre>
+<pre class="r"><code>corrMatrix</code></pre>
+<pre><code>##               LotArea TotalBsmtSF GrLivArea
+## LotArea     1.0000000   0.2608331 0.2631162
+## TotalBsmtSF 0.2608331   1.0000000 0.4548682
+## GrLivArea   0.2631162   0.4548682 1.0000000</code></pre>
+</div>
+<div id="calculus-based-probability-statistics-5-points" class="section level3">
+<h3>Calculus-Based Probability &amp; Statistics (5 points)</h3>
+<p><strong>Many times, it makes sense to fit a closed form distribution to data. Select a variable in the Kaggle.com training dataset that is skewed to the right, shift it so that the minimum value is absolutely above zero if necessary. Then load the MASS package and run fitdistr to fit an exponential probability density function. (See <a href="https://stat.ethz.ch/R-manual/R-devel/library/MASS/html/fitdistr.html" class="uri">https://stat.ethz.ch/R-manual/R-devel/library/MASS/html/fitdistr.html</a> ). Find the optimal value of <span class="math inline">\(\lambda\)</span> for this distribution, and then take <span class="math inline">\(1,000\)</span> samples from this exponential distribution using this value (e.g., <span class="math inline">\(rexp(1,000, \lambda)\)</span>). Plot a histogram and compare it with a histogram of your original variable. Using the exponential pdf, find the <span class="math inline">\(5^{th}\)</span> and <span class="math inline">\(95^{th}\)</span> percentiles using the cumulative distribution function (CDF). Also generate a <span class="math inline">\(95\%\)</span> confidence interval from the empirical data, assuming normality. Finally, provide the empirical <span class="math inline">\(5^{th}\)</span> percentile and <span class="math inline">\(95^{th}\)</span> percentile of the data. Discuss.</strong></p>
+</div>
+<div id="modeling-10-points" class="section level3">
+<h3>Modeling (10 points)</h3>
+<p><strong>Build some type of multiple regression model and submit your model to the competition board. Provide your complete model summary and results with analysis. Report your Kaggle.com user name and score.</strong></p>
 </div>
 </div>
 </div>
